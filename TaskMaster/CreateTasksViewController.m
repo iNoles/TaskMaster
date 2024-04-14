@@ -31,18 +31,25 @@
 }
 
 - (IBAction)saveButton:(UIBarButtonItem *)sender {
+    // Create a new Entity object and initialize it with the managed object context
     Entity *newEntity = [[Entity alloc] initWithContext: self.managedObjectContext];
+    
+    // Set properties of the new Entity object based on user input
     newEntity.title = _nameTextField.text;
     newEntity.notes = _notesTextField.text;
     newEntity.completed = NO;
     
-    // Save the managed object context
-    NSError *saveError = nil;
-    if (![self.managedObjectContext save:&saveError]) {
-        NSLog(@"Error saving context: %@", saveError);
-    } else {
-        // Dismiss the add task view controller
-        [self.navigationController popViewControllerAnimated:YES];
+    // Check if there are any changes in the managed object context
+    if ([self.managedObjectContext hasChanges]) {
+        // Save the managed object context
+        NSError *saveError = nil;
+        if (![self.managedObjectContext save:&saveError]) {
+            // Handle error if saving fails
+            NSLog(@"Error saving context: %@", saveError);
+        } else {
+            // If saving succeeds, dismiss the add task view controller
+            [self.navigationController popViewControllerAnimated:YES];
+        }
     }
 }
 

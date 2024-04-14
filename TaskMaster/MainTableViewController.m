@@ -50,20 +50,31 @@
 }
 
 - (IBAction)checkmarkTapped:(UITapGestureRecognizer *)sender {
+    // Get the location of the tap gesture in the table view
     CGPoint touchPoint = [sender locationInView:self.tableView];
+    
+    // Get the index path of the cell at the tap location
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:touchPoint];
+    
+    // Check if the index path is valid
     if (indexPath != nil) {
-        // Update the completion status of the task
+        // Retrieve the task entity associated with the tapped cell
         Entity *entity = self.tasks[indexPath.row];
+        
+        // Toggle the completion status of the task
         entity.completed = !entity.completed;
         
-        // Save the changes to Core Data
-        NSError *saveError = nil;
-        if (![self.managedObjectContext save:&saveError]) {
-            NSLog(@"Error saving context: %@", saveError);
-        } else {
-            // Reload the table view to reflect the changes
-            [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+        // Check if there are any changes in the managed object context
+        if ([self.managedObjectContext hasChanges]) {
+            // Save the changes to Core Data
+            NSError *saveError = nil;
+            if (![self.managedObjectContext save:&saveError]) {
+                // Handle error if saving fails
+                NSLog(@"Error saving context: %@", saveError);
+            } else {
+                // Reload the table view to reflect the changes
+                [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+            }
         }
     }
 }
